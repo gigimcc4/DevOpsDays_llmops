@@ -1,6 +1,6 @@
 # Hands-On LLMOps: Build an Observable AI System in 90 Minutes
 
-A DevOps Days workshop by [Ars Innovate Technologies & Consulting](https://arsinnovate.com) / Dr. Jeanne McClure.
+A DevOps Days workshop by Dr. Jeanne McClure. / [Ars Innovate Technologies & Consulting](https://arsinnovate.com) & [Data Science and AI Academy, North Carolina State University](https://datascienceacademy.ncsu.edu/)
 
 You ship an LLM feature. It works — mostly. Last week it gave a customer bizarre advice and nobody knows why. The logs show an HTTP 200. Helpful.
 
@@ -67,6 +67,8 @@ Ideas Monday you:
 
 ## Questions or stuck?
 
-Open an issue on this repo, or find me on [LinkedIn](https://www.linkedin.com/in/drjeannemcclure/) (Dr. Jeanne McClure, Arsinnovate). I respond.
+Open an issue on this repo, or find me on [LinkedIn](https://www.linkedin.com/in/drjeannemcclure/) (Dr. Jeanne McClure). I respond.
 
-— Arsinnovate
+This material is based in part upon work supported by the National Science Foundation under Grant #DGE-2222148. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.
+
+
