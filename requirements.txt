@@ -1,0 +1,18 @@
+# Workshop dependencies — pinned for reproducibility across 90 min
+# Tested on Python 3.10+
+
+# LLM + embeddings (local via Ollama)
+ollama==0.4.4
+
+# Vector store
+chromadb==0.5.23
+
+# Observability
+langfuse==2.59.3
+opentelemetry-api==1.29.0
+opentelemetry-sdk==1.29.0
+opentelemetry-exporter-otlp-proto-http==1.29.0
+
+# Utilities
+python-dotenv==1.0.1
+rich==13.9.4

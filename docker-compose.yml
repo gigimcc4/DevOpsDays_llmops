@@ -1,0 +1,48 @@
+# Langfuse v2 self-hosted — minimal footprint for workshop
+# Brings up: postgres + langfuse server on localhost:3000
+# Start with: docker compose up -d
+# Stop with:  docker compose down
+# Nuke data:  docker compose down -v
+
+services:
+  langfuse-db:
+    image: postgres:15-alpine
+    container_name: llmops-langfuse-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: langfuse
+      POSTGRES_PASSWORD: langfuse
+      POSTGRES_DB: langfuse
+    volumes:
+      - langfuse_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U langfuse"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  langfuse:
+    image: langfuse/langfuse:2
+    container_name: llmops-langfuse
+    restart: unless-stopped
+    depends_on:
+      langfuse-db:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://langfuse:langfuse@langfuse-db:5432/langfuse
+      NEXTAUTH_SECRET: workshop-dev-secret-change-me
+      SALT: workshop-dev-salt-change-me
+      NEXTAUTH_URL: http://localhost:3000
+      TELEMETRY_ENABLED: "false"
+      LANGFUSE_INIT_ORG_ID: devopsdays
+      LANGFUSE_INIT_ORG_NAME: DevOpsDays
+      LANGFUSE_INIT_PROJECT_ID: llmops-workshop
+      LANGFUSE_INIT_PROJECT_NAME: LLMOps Workshop
+      LANGFUSE_INIT_USER_EMAIL: workshop@local.dev
+      LANGFUSE_INIT_USER_NAME: Workshop User
+      LANGFUSE_INIT_USER_PASSWORD: workshop123
+
+volumes:
+  langfuse_db_data:

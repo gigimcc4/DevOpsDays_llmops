@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Virtual envs
+.venv/
+venv/
+env/
+
+# Local state
+.env
+.env.local
+*.log
+
+# ChromaDB persistence
+chroma_db/
+**/chroma_db/
+*.sqlite3
+
+# Langfuse local state
+langfuse_data/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Presenter-only material (not for attendees)
+PRESENTER_RUNBOOK.md
+PUSH_INSTRUCTIONS.md
+Arsinnovate_LLMOps_Workshop.pptx
+
+# Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Build
+dist/
+build/
