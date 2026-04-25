@@ -19,7 +19,7 @@ LLMs fail differently. There is no stack trace when the model hallucinates. Your
 
 ---
 
-## Before the workshop
+## After the workshop - if you do not have them installed.
 
 **Read and complete [PREWORK.md](./PREWORK.md).** Plan 30–45 minutes. The downloads are the slow part; the setup is about 10 minutes of active work.
 
@@ -29,7 +29,7 @@ When your environment is ready:
 python step0_check/check_env.py
 ```
 
-Every check should be green before you arrive.
+Every check should be green.
 
 ---
 
