@@ -105,9 +105,17 @@ ok "all-minilm ready"
 # ---------------------------------------------------------------------------
 # 4. Python packages
 # ---------------------------------------------------------------------------
+# Modern Homebrew Python (PEP 668) refuses pip-install without permission.
+# Try a normal install first; if it fails with "externally-managed-environment",
+# retry with --break-system-packages. The flag is harmless on regular Python.
 step "Installing Python packages"
-python3 -m pip install --upgrade pip >/dev/null
-python3 -m pip install -r requirements.txt
+PIP_INSTALL_FLAGS=""
+if ! python3 -m pip install --upgrade pip >/dev/null 2>&1; then
+  warn "pip refused to install (likely externally-managed Homebrew Python) — retrying with --break-system-packages"
+  PIP_INSTALL_FLAGS="--break-system-packages"
+  python3 -m pip install $PIP_INSTALL_FLAGS --upgrade pip >/dev/null
+fi
+python3 -m pip install $PIP_INSTALL_FLAGS -r requirements.txt
 ok "Python packages installed"
 
 # ---------------------------------------------------------------------------
