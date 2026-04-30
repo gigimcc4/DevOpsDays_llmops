@@ -1,5 +1,7 @@
-# Langfuse v2 self-hosted — minimal footprint for workshop
-# Brings up: postgres + langfuse server on localhost:3000
+# Workshop stack — minimal footprint
+# Brings up:
+#   * postgres + langfuse server on localhost:3000  (LLM-native observability)
+#   * jaeger all-in-one on localhost:16686         (OTel trace UI)
 # Start with: docker compose up -d
 # Stop with:  docker compose down
 # Nuke data:  docker compose down -v
@@ -43,6 +45,17 @@ services:
       LANGFUSE_INIT_USER_EMAIL: workshop@local.dev
       LANGFUSE_INIT_USER_NAME: Workshop User
       LANGFUSE_INIT_USER_PASSWORD: workshop123
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.62
+    container_name: llmops-jaeger
+    restart: unless-stopped
+    ports:
+      - "16686:16686"   # Jaeger UI
+      - "4317:4317"     # OTLP gRPC receiver
+      - "4318:4318"     # OTLP HTTP receiver
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
 
 volumes:
   langfuse_db_data:

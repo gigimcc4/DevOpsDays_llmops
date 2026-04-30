@@ -1,17 +1,20 @@
 """
-Step 3 — Langfuse + OpenTelemetry.
+Step 3 — Langfuse + OpenTelemetry + Jaeger.
 
-Why both?
+Why both observability tools?
   Langfuse gives you the LLM-native view: prompts, completions, tokens, cost.
   OTel gives you the cross-service view: how does the LLM call fit into
   the rest of your system (API gateway -> auth -> RAG -> DB -> response)?
 
-In production you typically want BOTH: Langfuse for the quality/cost story,
-OTel export to your existing APM (Jaeger, Datadog, Honeycomb) for the
-request-flow story. This step proves they coexist without conflict.
+This step proves they coexist without conflict.
 
-For demo simplicity OTel here exports to the console. In production you'd
-swap ConsoleSpanExporter for OTLPSpanExporter pointing at your collector.
+OTel ships its spans to Jaeger via OTLP gRPC (port 4317). Open the Jaeger UI
+at http://localhost:16686 — pick service "llmops-workshop-rag" and click
+into a trace to see the per-stage span tree.
+
+In production you swap Jaeger for whatever APM you already use (Tempo,
+Datadog, Honeycomb...). The Python code below stays the same; only the
+exporter endpoint changes.
 
 Run: python step3_otel/rag.py
 """
@@ -28,9 +31,10 @@ from dotenv import load_dotenv
 from langfuse import Langfuse
 from langfuse.decorators import langfuse_context, observe
 from opentelemetry import trace
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from rich.console import Console
 from rich.panel import Panel
 
@@ -47,9 +51,13 @@ TOP_K = 3
 
 # ---------- OTel setup ----------
 # One-time configuration; after this, tracer.start_as_current_span() works.
+# We export to Jaeger via OTLP gRPC. Jaeger UI: http://localhost:16686
+OTEL_ENDPOINT = os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT", "http://localhost:4317")
 resource = Resource.create({"service.name": "llmops-workshop-rag"})
 provider = TracerProvider(resource=resource)
-provider.add_span_processor(BatchSpanProcessor(ConsoleSpanExporter()))
+provider.add_span_processor(
+    BatchSpanProcessor(OTLPSpanExporter(endpoint=OTEL_ENDPOINT, insecure=True))
+)
 trace.set_tracer_provider(provider)
 tracer = trace.get_tracer(__name__)
 
@@ -196,7 +204,12 @@ def main() -> int:
 
     langfuse.flush()
     provider.force_flush()
-    console.print("\n[dim]OTel spans printed above, Langfuse traces at http://localhost:3000[/dim]")
+    console.print(
+        "\n[dim]Jaeger UI:    http://localhost:16686  (service = llmops-workshop-rag)[/dim]"
+    )
+    console.print(
+        "[dim]Langfuse UI:  http://localhost:3000[/dim]"
+    )
     return 0
 
 

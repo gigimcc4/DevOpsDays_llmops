@@ -27,9 +27,10 @@ from dotenv import load_dotenv
 from langfuse import Langfuse
 from langfuse.decorators import langfuse_context, observe
 from opentelemetry import trace
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from rich.console import Console
 from rich.panel import Panel
 
@@ -43,9 +44,12 @@ CHUNK_SIZE = 500
 CHUNK_OVERLAP = 50
 TOP_K = 3
 
+OTEL_ENDPOINT = os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT", "http://localhost:4317")
 resource = Resource.create({"service.name": "llmops-workshop-rag-broken"})
 provider = TracerProvider(resource=resource)
-provider.add_span_processor(BatchSpanProcessor(ConsoleSpanExporter()))
+provider.add_span_processor(
+    BatchSpanProcessor(OTLPSpanExporter(endpoint=OTEL_ENDPOINT, insecure=True))
+)
 trace.set_tracer_provider(provider)
 tracer = trace.get_tracer(__name__)
 
@@ -194,6 +198,12 @@ def main() -> int:
 
     langfuse.flush()
     provider.force_flush()
+    console.print(
+        "\n[dim]Jaeger UI:    http://localhost:16686  (service = llmops-workshop-rag-broken)[/dim]"
+    )
+    console.print(
+        "[dim]Langfuse UI:  http://localhost:3000[/dim]"
+    )
     return 0
 
 

@@ -5,6 +5,7 @@ This script checks that every piece of the stack is installed and reachable:
   * Python version
   * Docker daemon
   * Langfuse container reachable on localhost:3000
+  * Jaeger UI reachable on localhost:16686
   * Ollama reachable on localhost:11434
   * Required models pulled (llama3.2:1b, all-minilm)
   * Python deps importable
@@ -93,6 +94,20 @@ def check_langfuse() -> bool:
         return False
 
 
+def check_jaeger() -> bool:
+    header("Jaeger (http://localhost:16686)")
+    try:
+        with urllib.request.urlopen("http://localhost:16686/", timeout=5) as r:
+            if r.status == 200:
+                ok("Jaeger UI is up")
+                return True
+            fail(f"Jaeger responded {r.status}", "docker compose up -d")
+            return False
+    except (urllib.error.URLError, TimeoutError) as e:
+        fail(f"Jaeger not reachable: {e}", "from the repo root: docker compose up -d")
+        return False
+
+
 def check_ollama() -> bool:
     header("Ollama (http://localhost:11434)")
     try:
@@ -133,6 +148,7 @@ def check_python_deps() -> bool:
         ("chromadb", "chromadb"),
         ("langfuse", "langfuse"),
         ("opentelemetry-api", "opentelemetry"),
+        ("opentelemetry-exporter-otlp-proto-grpc", "opentelemetry.exporter.otlp.proto.grpc.trace_exporter"),
         ("python-dotenv", "dotenv"),
         ("rich", "rich"),
     ]:
@@ -154,6 +170,7 @@ def main() -> int:
         check_docker(),
         check_python_deps(),
         check_langfuse(),
+        check_jaeger(),
         check_ollama(),
     ]
 
@@ -162,6 +179,8 @@ def main() -> int:
         print(f"{GREEN}{BOLD}All checks passed.{END} You're ready for the workshop.\n")
         return 0
     print(f"{RED}{BOLD}Some checks failed.{END} Fix the items above and re-run.\n")
+    print("Tip: ./setup.sh installs Ollama, models, pip deps, and Langfuse in one shot")
+    print("     (assumes Python 3.10+ and Docker Desktop are already installed).\n")
     print("If stuck, see PREWORK.md or post in the workshop Slack channel.\n")
     return 1
 
