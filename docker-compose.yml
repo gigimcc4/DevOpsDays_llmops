@@ -47,7 +47,7 @@ services:
       LANGFUSE_INIT_USER_PASSWORD: workshop123
 
   jaeger:
-    image: jaegertracing/all-in-one:1.62
+    image: jaegertracing/all-in-one:latest
     container_name: llmops-jaeger
     restart: unless-stopped
     ports:
