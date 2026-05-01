@@ -112,6 +112,58 @@ I help engineering teams ship observable AI without learning every lesson the ha
 
 ---
 
+## How to cite
+
+If you use these materials in a paper, talk, blog post, internal training, or course, please cite:
+
+> McClure, J. (2026). *Hands-On(ish) LLMOps: Maybe Build · Maybe Demo of an Observable AI System in 90 Minutes.* DevOpsDays Raleigh workshop. Ars Innovate Technologies & Consulting. https://github.com/gigimcc4/DevOpsDays_llmops
+
+BibTeX:
+
+```bibtex
+@misc{mcclure2026llmops,
+  author       = {McClure, Jeanne},
+  title        = {Hands-On(ish) LLMOps: Maybe Build $\cdot$ Maybe Demo of an Observable AI System in 90 Minutes},
+  year         = {2026},
+  publisher    = {Ars Innovate Technologies \& Consulting},
+  howpublished = {DevOpsDays Raleigh workshop},
+  url          = {https://github.com/gigimcc4/DevOpsDays_llmops}
+}
+```
+
+---
+
+## License
+
+**Code** (everything in `step*/`, `setup.sh`, `docker-compose.yml`, `requirements.txt`, env-check scripts) — released under the **MIT License** (see [LICENSE](./LICENSE)). Use, modify, embed in your own projects freely.
+
+**Workshop materials** (slide deck, participant packet, instructor materials, and any derivative training content) — © 2026 Jeanne McClure / Ars Innovate Technologies & Consulting. Released for **non-commercial educational use with attribution**.
+
+You **may**:
+- Use the deck, packet, and curriculum to learn at your own pace
+- Run this workshop **internally for your own team** (free, with attribution to Jeanne McClure / Ars Innovate)
+- Adapt or excerpt for academic teaching, with attribution
+
+You **may not** (without a separate license):
+- Charge attendees for a workshop based on this material
+- Repackage as a paid course, book, video series, or commercial training
+- Use as part of a paid consulting engagement to deliver training to a third party
+- Remove attribution
+
+### Commercial / paid use — contact me first
+
+If you want to use these materials for any of the following, please reach out so we can scope a license:
+- Paid training / paid workshops / corporate training contracts
+- Inclusion in a paid course, certification program, or curriculum
+- Integration into a commercial product or service offering
+- Derivative works sold for profit
+
+📧 [jmcclure@arsinnovate.com](mailto:jmcclure@arsinnovate.com) · 💼 [LinkedIn](https://www.linkedin.com/in/jeannemcclure/)
+
+I'm friendly. Most reasonable requests get a quick yes with simple terms.
+
+---
+
 ## Questions or stuck?
 
 Open an issue on this repo, or find me on [LinkedIn](https://www.linkedin.com/in/jeannemcclure/) (Dr. Jeanne McClure). I respond.

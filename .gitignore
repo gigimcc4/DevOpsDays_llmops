@@ -31,7 +31,11 @@ Thumbs.db
 # Presenter-only material (not for attendees)
 PRESENTER_RUNBOOK.md
 PUSH_INSTRUCTIONS.md
-Arsinnovate_LLMOps_Workshop.pptx
+*Instructor*
+instructor-only/
+
+# PowerPoint source files — only the PDF ships in the repo
+*.pptx
 
 # Editors
 .idea/
