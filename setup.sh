@@ -137,10 +137,30 @@ fi
 ok "Python packages installed"
 
 # ---------------------------------------------------------------------------
-# 5. Langfuse (docker compose)
+# 5. Langfuse + Jaeger (docker compose)
 # ---------------------------------------------------------------------------
-step "Starting Langfuse via docker compose"
-docker compose up -d
+# If you previously ran setup from a different folder, the named containers
+# (llmops-langfuse, llmops-jaeger, etc.) are already up. docker compose
+# will try to RE-create them and crash on a name conflict. Detect that
+# and only start what's missing.
+step "Starting Langfuse + Jaeger via docker compose"
+
+LANGFUSE_RUNNING=false
+JAEGER_RUNNING=false
+docker ps --format '{{.Names}}' | grep -q '^llmops-langfuse$' && LANGFUSE_RUNNING=true
+docker ps --format '{{.Names}}' | grep -q '^llmops-jaeger$'   && JAEGER_RUNNING=true
+
+if $LANGFUSE_RUNNING && $JAEGER_RUNNING; then
+  ok "Langfuse + Jaeger already running"
+elif $LANGFUSE_RUNNING; then
+  warn "Langfuse already running — starting Jaeger only"
+  docker compose up -d jaeger
+elif $JAEGER_RUNNING; then
+  warn "Jaeger already running — starting Langfuse only"
+  docker compose up -d langfuse-db langfuse
+else
+  docker compose up -d
+fi
 
 echo "  Waiting for Langfuse to be reachable on http://localhost:3000 ..."
 for i in $(seq 1 30); do
