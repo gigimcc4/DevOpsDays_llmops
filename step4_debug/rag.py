@@ -173,11 +173,19 @@ def generate_answer(query: str, context: list[dict]) -> str:
 
 @observe()
 def ask(coll: chromadb.Collection, question: str) -> None:
-    with otel_span("ask", question=question[:120]):
+    with otel_span("ask", question=question[:120]) as span:
         console.print(Panel.fit(f"[bold]Q:[/bold] {question}", border_style="cyan"))
-        chunks = retrieve(coll, question)
-        answer = generate_answer(question, chunks)
-        console.print(Panel(answer, title="Answer", border_style="green"))
+        try:
+            chunks = retrieve(coll, question)
+            answer = generate_answer(question, chunks)
+            console.print(Panel(answer, title="Answer", border_style="green"))
+        except Exception as e:
+            # Capture in the span so the trace tells the debug story
+            span.set_attribute("error", True)
+            span.set_attribute("error.type", type(e).__name__)
+            span.set_attribute("error.message", str(e))
+            err = f"[bold]{type(e).__name__}:[/bold] {e}\n\n[dim]Look at the trace in Jaeger to figure out what's wrong.[/dim]"
+            console.print(Panel(err, title="Pipeline failed", border_style="red"))
 
 
 def main() -> int:
