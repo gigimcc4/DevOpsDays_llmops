@@ -35,16 +35,32 @@ fail() { echo "  ${RED}[FAIL]${END} $1"; exit 1; }
 # ---------------------------------------------------------------------------
 step "Checking prerequisites (Python + Docker)"
 
-if ! command -v python3 >/dev/null 2>&1; then
-  fail "python3 not found. Install Python 3.10+ first: https://www.python.org/downloads/"
+# Auto-detect any Python 3.10+ on PATH. Macs ship with python3 = 3.9, but
+# people often have python3.11 / 3.12 installed via Homebrew or pyenv.
+# Pick the first one that's >= 3.10 and use it for the rest of setup.
+PYTHON_CMD=""
+for py in python3.13 python3.12 python3.11 python3.10 python3; do
+  if command -v "$py" >/dev/null 2>&1; then
+    if "$py" -c 'import sys; sys.exit(0 if sys.version_info >= (3,10) else 1)' 2>/dev/null; then
+      PYTHON_CMD="$py"
+      break
+    fi
+  fi
+done
+
+if [ -z "$PYTHON_CMD" ]; then
+  fail "No Python 3.10+ found. Install with one of:
+           macOS:  brew install python@3.11
+           any:    https://www.python.org/downloads/
+         Then re-run ./setup.sh"
 fi
-PY_MAJOR=$(python3 -c 'import sys; print(sys.version_info.major)')
-PY_MINOR=$(python3 -c 'import sys; print(sys.version_info.minor)')
-PY_MICRO=$(python3 -c 'import sys; print(sys.version_info.micro)')
-if [ "$PY_MAJOR" -lt 3 ] || { [ "$PY_MAJOR" -eq 3 ] && [ "$PY_MINOR" -lt 10 ]; }; then
-  fail "Python ${PY_MAJOR}.${PY_MINOR} is too old (need 3.10+)"
+
+if ! command -v docker >/dev/null 2>&1; then
+  fail "docker not found. Install Docker Desktop: https://www.docker.com/products/docker-desktop"
 fi
-ok "Python ${PY_MAJOR}.${PY_MINOR}.${PY_MICRO}"
+
+PY_VERSION=$("$PYTHON_CMD" -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}")')
+ok "Python $PY_VERSION (using $PYTHON_CMD)"
 
 if ! command -v docker >/dev/null 2>&1; then
   fail "docker not found. Install Docker Desktop: https://www.docker.com/products/docker-desktop"
@@ -110,12 +126,12 @@ ok "all-minilm ready"
 # retry with --break-system-packages. The flag is harmless on regular Python.
 step "Installing Python packages"
 PIP_INSTALL_FLAGS=""
-if ! python3 -m pip install --upgrade pip >/dev/null 2>&1; then
+if ! "$PYTHON_CMD" -m pip install --upgrade pip >/dev/null 2>&1; then
   warn "pip refused to install (likely externally-managed Homebrew Python) — retrying with --break-system-packages"
   PIP_INSTALL_FLAGS="--break-system-packages"
-  python3 -m pip install $PIP_INSTALL_FLAGS --upgrade pip >/dev/null
+  "$PYTHON_CMD" -m pip install $PIP_INSTALL_FLAGS --upgrade pip >/dev/null
 fi
-python3 -m pip install $PIP_INSTALL_FLAGS -r requirements.txt
+"$PYTHON_CMD" -m pip install $PIP_INSTALL_FLAGS -r requirements.txt
 ok "Python packages installed"
 
 # ---------------------------------------------------------------------------
@@ -140,9 +156,11 @@ done
 # 6. Final verification
 # ---------------------------------------------------------------------------
 step "Running env check"
-python3 step0_check/check_env.py
+"$PYTHON_CMD" step0_check/check_env.py
 
 echo
 echo "${GREEN}${BOLD}Setup complete.${END} You're ready for the workshop."
 echo "  Langfuse UI:  http://localhost:3000  (workshop@local.dev / workshop123)"
-echo "  Stop Langfuse later with: docker compose down"
+echo "  Jaeger UI:    http://localhost:16686"
+echo "  Run a step:   $PYTHON_CMD step1_rag/rag.py"
+echo "  Stop later:   docker compose down"
