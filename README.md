@@ -14,7 +14,7 @@ The **(ish)** is on purpose: most participants are seeing this for the first tim
 
 Print-ready guide with prerequisites, step-by-step setup, fillable worksheets per step, and a golden-answer key at the back:
 
-**[Workshop packet (Google Doc)](GOOGLE_LINK_HERE)** — viewable, printable, copy-able
+**[📄 Get your own copy of the workshop packet (Google Doc)](https://docs.google.com/document/d/1raYxBV0UJqx8_lrNEesVgQl8GgNYo2QZctaV1rQeWHM/copy)** — clicking the link makes a personal editable copy in your Drive, ready to fill in during the workshop
 
 Or grab the file directly: [`workshop_packet/Hands-On-ish_LLMOps_Packet.pdf`](workshop_packet/Hands-On-ish_LLMOps_Packet.pdf)
 
