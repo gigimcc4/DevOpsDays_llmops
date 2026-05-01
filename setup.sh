@@ -125,13 +125,15 @@ ok "all-minilm ready"
 # Try a normal install first; if it fails with "externally-managed-environment",
 # retry with --break-system-packages. The flag is harmless on regular Python.
 step "Installing Python packages"
-PIP_INSTALL_FLAGS=""
-if ! "$PYTHON_CMD" -m pip install --upgrade pip >/dev/null 2>&1; then
-  warn "pip refused to install (likely externally-managed Homebrew Python) — retrying with --break-system-packages"
-  PIP_INSTALL_FLAGS="--break-system-packages"
-  "$PYTHON_CMD" -m pip install $PIP_INSTALL_FLAGS --upgrade pip >/dev/null
+# We install directly into the active Python environment. We do NOT attempt
+# to upgrade pip — Homebrew Python owns pip and refuses --upgrade. The pip
+# version that ships is recent enough.
+# If the first install hits PEP 668 (externally-managed-environment),
+# retry with --break-system-packages.
+if ! "$PYTHON_CMD" -m pip install -r requirements.txt 2>/dev/null; then
+  warn "pip install rejected (likely PEP 668 / externally-managed Homebrew Python) — retrying with --break-system-packages"
+  "$PYTHON_CMD" -m pip install --break-system-packages -r requirements.txt
 fi
-"$PYTHON_CMD" -m pip install $PIP_INSTALL_FLAGS -r requirements.txt
 ok "Python packages installed"
 
 # ---------------------------------------------------------------------------
